@@ -1,218 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BANESTES · Automação Setorial</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --banes-navy:  #003366;
+      --banes-blue:  #005BAA;
+      --banes-gold:  #C8960C;
+      --banes-light: #E8F1FA;
+      --banes-mid:   #4A90C4;
+      --on-color:    #1a7a3f;
+      --off-color:   #8a8a8a;
+      --alert-color: #c0392b;
+      --warn-color:  #e67e22;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --banes-navy: #003366;
-    --banes-blue: #005BAA;
-    --banes-gold: #C8960C;
-    --banes-light: #E8F1FA;
-    --banes-mid: #4A90C4;
-    --on-color: #1a7a3f;
-    --off-color: #8a8a8a;
-    --alert-color: #c0392b;
-    --warn-color: #e67e22;
-  }
-  body { font-family: var(--font-sans, sans-serif); }
-  .shell {
-    background: linear-gradient(160deg, #001f44 0%, #003366 60%, #004080 100%);
-    min-height: 100vh;
-    padding: 0;
-  }
-  .topbar {
-    background: rgba(0,0,0,0.25);
-    border-bottom: 1px solid rgba(200,150,12,0.4);
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo-area { display: flex; align-items: center; gap: 10px; }
-  .logo-badge {
-    width: 36px; height: 36px;
-    background: var(--banes-gold);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 500; font-size: 13px; color: #001f44;
-  }
-  .logo-text { color: #fff; }
-  .logo-text .brand { font-size: 15px; font-weight: 500; letter-spacing: 0.05em; }
-  .logo-text .sub { font-size: 11px; color: rgba(200,150,12,0.9); letter-spacing: 0.08em; }
-  .topbar-right { display: flex; align-items: center; gap: 16px; }
-  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
-  .live-label { font-size: 11px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
-  .ts { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .shell {
+      background: linear-gradient(160deg, #001f44 0%, #003366 60%, #004080 100%);
+      min-height: 100vh;
+    }
+    .topbar {
+      background: rgba(0,0,0,0.25);
+      border-bottom: 1px solid rgba(200,150,12,0.4);
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo-area { display: flex; align-items: center; gap: 10px; }
+    .logo-badge {
+      width: 36px; height: 36px; background: var(--banes-gold); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: #001f44; letter-spacing: -0.5px;
+    }
+    .logo-text .brand { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.05em; }
+    .logo-text .sub   { font-size: 11px; color: rgba(200,150,12,0.9); letter-spacing: 0.08em; }
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; animation: pulse 2s infinite; }
+    .live-dot.mock { background: #e67e22; }
+    @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+    .live-label { font-size: 11px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+    .ts { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .mock-badge {
+      font-size: 10px; padding: 2px 7px; border-radius: 3px;
+      background: rgba(230,126,34,0.2); border: 0.5px solid rgba(230,126,34,0.5); color: #e67e22;
+    }
+    .refresh-btn {
+      background: rgba(255,255,255,0.07); border: 0.5px solid rgba(255,255,255,0.2);
+      border-radius: 4px; padding: 4px 10px; font-size: 11px; color: rgba(255,255,255,0.6);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-  .nav-tabs {
-    background: rgba(0,0,0,0.2);
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    display: flex; padding: 0 20px; gap: 4px;
-  }
-  .nav-tab {
-    padding: 10px 16px; font-size: 12px; color: rgba(255,255,255,0.5);
-    cursor: pointer; border-bottom: 2px solid transparent;
-    transition: all 0.2s; letter-spacing: 0.04em;
-  }
-  .nav-tab.active { color: var(--banes-gold); border-bottom-color: var(--banes-gold); }
-  .nav-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
+    .nav-tabs {
+      background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; padding: 0 20px; gap: 4px;
+    }
+    .nav-tab {
+      padding: 10px 16px; font-size: 12px; color: rgba(255,255,255,0.5);
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+      letter-spacing: 0.04em; user-select: none;
+    }
+    .nav-tab.active { color: var(--banes-gold); border-bottom-color: var(--banes-gold); }
+    .nav-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
 
-  .content { padding: 16px 20px; }
+    .content { padding: 16px 20px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section-title {
+      font-size: 11px; letter-spacing: 0.1em; color: rgba(200,150,12,0.8);
+      text-transform: uppercase; margin-bottom: 10px; font-weight: 500;
+    }
 
-  .section-title {
-    font-size: 11px; letter-spacing: 0.1em; color: rgba(200,150,12,0.8);
-    text-transform: uppercase; margin-bottom: 10px; font-weight: 500;
-  }
+    .kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+    .kpi-card {
+      background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 14px;
+    }
+    .kpi-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+    .kpi-val   { font-size: 22px; font-weight: 500; color: #fff; }
+    .kpi-sub   { font-size: 11px; margin-top: 4px; }
+    .kpi-sub.up   { color: #e74c3c; }
+    .kpi-sub.down { color: #2ecc71; }
+    .kpi-sub.neu  { color: rgba(255,255,255,0.4); }
 
-  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-  .kpi-card {
-    background: rgba(255,255,255,0.06);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 10px; padding: 14px;
-  }
-  .kpi-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
-  .kpi-val { font-size: 22px; font-weight: 500; color: #fff; }
-  .kpi-sub { font-size: 11px; margin-top: 4px; }
-  .kpi-sub.up { color: #e74c3c; }
-  .kpi-sub.down { color: #2ecc71; }
-  .kpi-sub.neu { color: rgba(255,255,255,0.4); }
+    .three-col { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap: 12px; margin-bottom: 16px; }
+    .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .panel {
+      background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 14px;
+    }
+    .panel-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
 
-  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .panel {
-    background: rgba(255,255,255,0.05);
-    border: 0.5px solid rgba(255,255,255,0.1);
-    border-radius: 12px; padding: 14px;
-  }
-  .panel-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
+    .plugs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .plug-card {
+      border-radius: 8px; padding: 10px; border: 0.5px solid rgba(255,255,255,0.1);
+      position: relative; transition: all 0.2s;
+    }
+    .plug-card.on      { background: rgba(26,122,63,0.2);   border-color: rgba(46,204,113,0.3); }
+    .plug-card.off     { background: rgba(138,138,138,0.1); border-color: rgba(138,138,138,0.2); }
+    .plug-card.blocked { background: rgba(192,57,43,0.2);   border-color: rgba(192,57,43,0.4); }
+    .plug-card.standby { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.3); }
+    .plug-name  { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+    .plug-watts { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+    .plug-card.on      .plug-watts { color: #2ecc71; }
+    .plug-card.off     .plug-watts { color: rgba(255,255,255,0.3); }
+    .plug-card.blocked .plug-watts { color: #e74c3c; }
+    .plug-card.standby .plug-watts { color: #e67e22; }
+    .plug-status { font-size: 10px; }
+    .plug-card.on      .plug-status { color: #2ecc71; }
+    .plug-card.off     .plug-status { color: rgba(255,255,255,0.3); }
+    .plug-card.blocked .plug-status { color: #e74c3c; }
+    .plug-card.standby .plug-status { color: #e67e22; }
+    .plug-timer { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+    .plug-toggle {
+      position: absolute; top: 8px; right: 8px; width: 26px; height: 14px;
+      border-radius: 7px; cursor: pointer; border: 0.5px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; transition: background 0.2s;
+    }
+    .plug-toggle.on      { background: #2ecc71; justify-content: flex-end; }
+    .plug-toggle.off,
+    .plug-toggle.standby { background: rgba(138,138,138,0.4); justify-content: flex-start; }
+    .plug-toggle.blocked { background: rgba(192,57,43,0.5); justify-content: flex-start; pointer-events: none; }
+    .plug-knob { width: 10px; height: 10px; border-radius: 50%; background: #fff; margin: 2px; }
 
-  .plugs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .plug-card {
-    border-radius: 8px; padding: 10px;
-    border: 0.5px solid rgba(255,255,255,0.1);
-    position: relative;
-  }
-  .plug-card.on { background: rgba(26,122,63,0.2); border-color: rgba(46,204,113,0.3); }
-  .plug-card.off { background: rgba(138,138,138,0.1); border-color: rgba(138,138,138,0.2); }
-  .plug-card.blocked { background: rgba(192,57,43,0.2); border-color: rgba(192,57,43,0.4); }
-  .plug-card.standby { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.3); }
-  .plug-name { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
-  .plug-watts { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
-  .plug-card.on .plug-watts { color: #2ecc71; }
-  .plug-card.off .plug-watts { color: rgba(255,255,255,0.3); }
-  .plug-card.blocked .plug-watts { color: #e74c3c; }
-  .plug-card.standby .plug-watts { color: #e67e22; }
-  .plug-status { font-size: 10px; }
-  .plug-card.on .plug-status { color: #2ecc71; }
-  .plug-card.off .plug-status { color: rgba(255,255,255,0.3); }
-  .plug-card.blocked .plug-status { color: #e74c3c; }
-  .plug-card.standby .plug-status { color: #e67e22; }
-  .plug-timer { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
-  .plug-toggle {
-    position: absolute; top: 8px; right: 8px;
-    width: 26px; height: 14px;
-    border-radius: 7px; cursor: pointer;
-    border: 0.5px solid rgba(255,255,255,0.2);
-    display: flex; align-items: center;
-    transition: background 0.2s;
-  }
-  .plug-toggle.on { background: #2ecc71; justify-content: flex-end; }
-  .plug-toggle.off, .plug-toggle.standby { background: rgba(138,138,138,0.4); justify-content: flex-start; }
-  .plug-toggle.blocked { background: rgba(192,57,43,0.5); }
-  .plug-knob { width: 10px; height: 10px; border-radius: 50%; background: #fff; margin: 2px; }
+    .ac-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+    .ac-unit {
+      border-radius: 8px; padding: 8px; border: 0.5px solid rgba(255,255,255,0.1);
+      text-align: center; cursor: pointer; transition: all 0.15s;
+    }
+    .ac-unit:hover:not(.auto-off) { border-color: rgba(255,255,255,0.3); }
+    .ac-unit.on       { background: rgba(0,91,170,0.25); border-color: rgba(74,144,196,0.4); }
+    .ac-unit.off      { background: rgba(138,138,138,0.08); }
+    .ac-unit.auto-off { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.35); cursor: default; }
+    .ac-num  { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+    .ac-icon { font-size: 14px; margin-bottom: 2px; }
+    .ac-temp { font-size: 11px; font-weight: 500; }
+    .ac-unit.on       .ac-temp { color: #4A90C4; }
+    .ac-unit.off      .ac-temp { color: rgba(255,255,255,0.25); }
+    .ac-unit.auto-off .ac-temp { color: #e67e22; }
+    .ac-label { font-size: 9px; margin-top: 2px; }
+    .ac-unit.on       .ac-label { color: rgba(74,144,196,0.8); }
+    .ac-unit.off      .ac-label { color: rgba(255,255,255,0.25); }
+    .ac-unit.auto-off .ac-label { color: #e67e22; }
 
-  .ac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-  .ac-unit {
-    border-radius: 8px; padding: 8px;
-    border: 0.5px solid rgba(255,255,255,0.1);
-    text-align: center; cursor: pointer;
-    transition: all 0.15s;
-  }
-  .ac-unit:hover { border-color: rgba(255,255,255,0.3); }
-  .ac-unit.on { background: rgba(0,91,170,0.25); border-color: rgba(74,144,196,0.4); }
-  .ac-unit.off { background: rgba(138,138,138,0.08); }
-  .ac-unit.auto-off { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.35); }
-  .ac-num { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
-  .ac-icon { font-size: 14px; margin-bottom: 2px; }
-  .ac-temp { font-size: 11px; font-weight: 500; }
-  .ac-unit.on .ac-temp { color: #4A90C4; }
-  .ac-unit.off .ac-temp { color: rgba(255,255,255,0.25); }
-  .ac-unit.auto-off .ac-temp { color: #e67e22; }
-  .ac-label { font-size: 9px; margin-top: 2px; }
-  .ac-unit.on .ac-label { color: rgba(74,144,196,0.8); }
-  .ac-unit.off .ac-label { color: rgba(255,255,255,0.25); }
-  .ac-unit.auto-off .ac-label { color: #e67e22; }
+    .chart-container { position: relative; width: 100%; height: 180px; }
 
-  .chart-container { position: relative; width: 100%; height: 180px; }
-  .chart-controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-  .chart-btn {
-    padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
-    background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.6); transition: all 0.15s;
-  }
-  .chart-btn.active { background: rgba(200,150,12,0.2); border-color: var(--banes-gold); color: var(--banes-gold); }
+    .log-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+    .log-item {
+      display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px;
+      background: rgba(255,255,255,0.04); border-radius: 6px;
+      border-left: 3px solid transparent; font-size: 11px;
+    }
+    .log-item.info  { border-left-color: #4A90C4; }
+    .log-item.warn  { border-left-color: #e67e22; }
+    .log-item.block { border-left-color: #e74c3c; }
+    .log-item.save  { border-left-color: #2ecc71; }
+    .log-time { color: rgba(255,255,255,0.35); white-space: nowrap; min-width: 44px; }
+    .log-msg  { color: rgba(255,255,255,0.75); flex: 1; }
+    .log-tag  { font-size: 9px; padding: 1px 5px; border-radius: 3px; white-space: nowrap; font-weight: 500; }
+    .log-tag.block { background: rgba(231,76,60,0.25);  color: #e74c3c; }
+    .log-tag.save  { background: rgba(46,204,113,0.2);  color: #2ecc71; }
+    .log-tag.warn  { background: rgba(230,126,34,0.2);  color: #e67e22; }
+    .log-tag.info  { background: rgba(74,144,196,0.2);  color: #4A90C4; }
 
-  .log-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
-  .log-item {
-    display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px;
-    background: rgba(255,255,255,0.04); border-radius: 6px;
-    border-left: 3px solid transparent;
-    font-size: 11px;
-  }
-  .log-item.info { border-left-color: #4A90C4; }
-  .log-item.warn { border-left-color: #e67e22; }
-  .log-item.block { border-left-color: #e74c3c; }
-  .log-item.save { border-left-color: #2ecc71; }
-  .log-time { color: rgba(255,255,255,0.35); white-space: nowrap; min-width: 44px; }
-  .log-msg { color: rgba(255,255,255,0.75); flex: 1; }
-  .log-tag {
-    font-size: 9px; padding: 1px 5px; border-radius: 3px;
-    white-space: nowrap; font-weight: 500;
-  }
-  .log-tag.block { background: rgba(231,76,60,0.25); color: #e74c3c; }
-  .log-tag.save { background: rgba(46,204,113,0.2); color: #2ecc71; }
-  .log-tag.warn { background: rgba(230,126,34,0.2); color: #e67e22; }
-  .log-tag.info { background: rgba(74,144,196,0.2); color: #4A90C4; }
+    .emergency-btn {
+      background: rgba(192,57,43,0.15); border: 1px solid rgba(192,57,43,0.5);
+      border-radius: 8px; padding: 10px 20px; color: #e74c3c; font-size: 13px;
+      font-weight: 500; cursor: pointer; width: 100%; letter-spacing: 0.05em;
+      transition: all 0.2s; margin-top: 10px;
+    }
+    .emergency-btn:hover { background: rgba(192,57,43,0.3); border-color: #e74c3c; }
 
-  .full-row { grid-column: 1 / -1; }
-  .three-col { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap: 12px; margin-bottom: 16px; }
+    .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .year-sel  { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .year-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+    .year-pill {
+      padding: 3px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
+      background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6); transition: all 0.15s; user-select: none;
+    }
+    .year-pill.active { background: rgba(0,91,170,0.3); border-color: rgba(74,144,196,0.5); color: #4A90C4; }
+    .savings-box {
+      background: rgba(46,204,113,0.1); border: 0.5px solid rgba(46,204,113,0.3);
+      border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px;
+      margin-bottom: 12px;
+    }
+    .savings-icon { font-size: 24px; }
+    .savings-title { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .savings-val   { font-size: 18px; font-weight: 500; color: #2ecc71; }
 
-  .emergency-btn {
-    background: rgba(192,57,43,0.15);
-    border: 1px solid rgba(192,57,43,0.5);
-    border-radius: 8px; padding: 10px 20px;
-    color: #e74c3c; font-size: 13px; font-weight: 500; cursor: pointer;
-    width: 100%; letter-spacing: 0.05em; transition: all 0.2s;
-    margin-top: 10px;
-  }
-  .emergency-btn:hover { background: rgba(192,57,43,0.3); }
+    .prog-wrap { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
 
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  .year-sel { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .year-label { font-size: 11px; color: rgba(255,255,255,0.5); }
-  .year-pill {
-    padding: 3px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
-    background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.6); transition: all 0.15s;
-  }
-  .year-pill.active { background: rgba(0,91,170,0.3); border-color: rgba(74,144,196,0.5); color: #4A90C4; }
-
-  .savings-box {
-    background: rgba(46,204,113,0.1); border: 0.5px solid rgba(46,204,113,0.3);
-    border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px;
-    margin-bottom: 12px;
-  }
-  .savings-icon { font-size: 24px; }
-  .savings-title { font-size: 12px; color: rgba(255,255,255,0.6); }
-  .savings-val { font-size: 18px; font-weight: 500; color: #2ecc71; }
-
-  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
-  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
-</style>
-
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+  </style>
+</head>
+<body>
 <div class="shell">
+
   <div class="topbar">
     <div class="logo-area">
       <div class="logo-badge">BAM</div>
@@ -222,83 +212,63 @@
       </div>
     </div>
     <div class="topbar-right">
+      <span class="mock-badge" id="mock-badge">MOCK</span>
       <div class="live-label">
-        <div class="live-dot"></div>
-        Sistema ativo
+        <div class="live-dot mock" id="live-dot"></div>
+        <span id="system-status">Dados simulados</span>
       </div>
+      <button class="refresh-btn" onclick="refreshData()">&#x21BA; Atualizar</button>
       <div class="ts" id="clock"></div>
     </div>
   </div>
 
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="switchTab('overview')">Visão Geral</div>
-    <div class="nav-tab" onclick="switchTab('plugs')">Tomadas Inteligentes</div>
-    <div class="nav-tab" onclick="switchTab('clima')">Climatização</div>
-    <div class="nav-tab" onclick="switchTab('comparativo')">Comparativos</div>
+    <div class="nav-tab active" onclick="switchTab(event,'overview')">Visão Geral</div>
+    <div class="nav-tab" onclick="switchTab(event,'plugs')">Tomadas Inteligentes</div>
+    <div class="nav-tab" onclick="switchTab(event,'clima')">Climatização</div>
+    <div class="nav-tab" onclick="switchTab(event,'comparativo')">Comparativos</div>
   </div>
 
   <div class="content">
 
-    <!-- OVERVIEW TAB -->
+    <!-- ══ TAB: VISÃO GERAL ══ -->
     <div id="tab-overview" class="tab-content active">
       <div class="kpi-row">
         <div class="kpi-card">
           <div class="kpi-label">Consumo atual (total)</div>
-          <div class="kpi-val" id="kpi-total">48,3 kW</div>
+          <div class="kpi-val" id="kpi-total">—</div>
           <div class="kpi-sub neu">16 ACs + Copa</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Custo estimado hoje</div>
-          <div class="kpi-val" id="kpi-cost">R$ 127</div>
-          <div class="kpi-sub down">▼ 18% vs ontem</div>
+          <div class="kpi-val" id="kpi-cost">—</div>
+          <div class="kpi-sub down">&#9660; 18% vs ontem</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Economia do mês</div>
-          <div class="kpi-val">R$ 1.842</div>
-          <div class="kpi-sub down">▼ 29% vs mês anterior</div>
+          <div class="kpi-val" id="kpi-savings">—</div>
+          <div class="kpi-sub down">&#9660; 29% vs mês anterior</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Bloqueios automáticos</div>
-          <div class="kpi-val" id="kpi-blocks">3</div>
-          <div class="kpi-sub warn" style="color:#e67e22;">picotadora hoje</div>
+          <div class="kpi-val" id="kpi-blocks">—</div>
+          <div class="kpi-sub" style="color:#e67e22;">picotadora hoje</div>
         </div>
       </div>
 
       <div class="three-col">
         <div class="panel">
           <div class="panel-title">Tomadas inteligentes — copa</div>
-          <div class="plugs-grid">
-            <div class="plug-card on" id="plug-caf1">
-              <div class="plug-toggle on" onclick="togglePlug('caf1')"><div class="plug-knob"></div></div>
-              <div class="plug-name">Cafeteira 1</div>
-              <div class="plug-watts" id="caf1-watts">1.450 W</div>
-              <div class="plug-status">Em uso</div>
-              <div class="plug-timer" id="caf1-timer">Inativo há: 0min</div>
-            </div>
-            <div class="plug-card standby" id="plug-caf2">
-              <div class="plug-toggle standby" onclick="togglePlug('caf2')"><div class="plug-knob"></div></div>
-              <div class="plug-name">Cafeteira 2</div>
-              <div class="plug-watts" id="caf2-watts">82 W</div>
-              <div class="plug-status">Standby</div>
-              <div class="plug-timer" id="caf2-timer">Inativo há: 22min</div>
-            </div>
-            <div class="plug-card blocked" id="plug-pico">
-              <div class="plug-toggle blocked"><div class="plug-knob"></div></div>
-              <div class="plug-name">Picotadora</div>
-              <div class="plug-watts" id="pico-watts">0 W</div>
-              <div class="plug-status">Bloqueada</div>
-              <div class="plug-timer">Caf.1 > 1.000W</div>
-            </div>
+          <div class="plugs-grid" id="plugs-overview"></div>
+          <div id="interlock-banner" style="margin-top:10px; padding:8px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:6px; display:none;">
+            <div style="font-size:10px; color:#e67e22; font-weight:500;">&#9889; Intertravamento ativo</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-top:2px;" id="interlock-msg"></div>
           </div>
-          <div style="margin-top:10px; padding:8px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:6px;">
-            <div style="font-size:10px; color:#e67e22; font-weight:500;">Intertravamento ativo</div>
-            <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-top:2px;">Cafeteira 1 consome 1.450W &gt; 1.000W → Picotadora bloqueada automaticamente</div>
-          </div>
-          <button class="emergency-btn" onclick="emergencyOff()">Desligar tudo — emergência</button>
+          <button class="emergency-btn" onclick="handleEmergencyOff()">&#9211; Desligar tudo — emergência</button>
         </div>
 
         <div class="panel">
-          <div class="panel-title">ACs — status geral</div>
+          <div class="panel-title">ACs — status (<span id="acs-on-count">—</span>/16)</div>
           <div class="ac-grid" id="ac-grid"></div>
         </div>
 
@@ -316,16 +286,16 @@
       </div>
     </div>
 
-    <!-- PLUGS TAB -->
+    <!-- ══ TAB: TOMADAS INTELIGENTES ══ -->
     <div id="tab-plugs" class="tab-content">
-      <div class="section-title">Gerenciamento de tomadas inteligentes</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+      <div class="section-title">Gerenciamento de tomadas inteligentes — copa</div>
+      <div class="two-col">
         <div class="panel">
           <div class="panel-title">Cafeteira 1 — detalhe</div>
           <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
             <div style="flex:1; min-width:80px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:10px; color:rgba(255,255,255,0.5);">Potência</div>
-              <div style="font-size:20px; font-weight:500; color:#2ecc71;">1.450W</div>
+              <div style="font-size:20px; font-weight:500; color:#2ecc71;" id="caf1-detail-watts">1.450 W</div>
             </div>
             <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:10px; color:rgba(255,255,255,0.5);">Hoje</div>
@@ -353,12 +323,13 @@
             <div style="font-size:11px; color:#e67e22; margin-top:2px;">30 min sem atividade → desligamento automático</div>
           </div>
         </div>
+
         <div class="panel">
           <div class="panel-title">Cafeteira 2 — detalhe</div>
           <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
             <div style="flex:1; min-width:80px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.25); border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:10px; color:rgba(255,255,255,0.5);">Potência</div>
-              <div style="font-size:20px; font-weight:500; color:#e67e22;">82W</div>
+              <div style="font-size:20px; font-weight:500; color:#e67e22;" id="caf2-detail-watts">82 W</div>
             </div>
             <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:10px; color:rgba(255,255,255,0.5);">Hoje</div>
@@ -370,71 +341,63 @@
             </div>
           </div>
           <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:6px;">Status — inatividade</div>
-          <div style="padding:10px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:8px; display:flex; align-items:center; gap:10px;">
-            <div>
-              <div style="font-size:18px; font-weight:500; color:#e67e22;">22 min</div>
-              <div style="font-size:10px; color:rgba(255,255,255,0.5);">em standby</div>
-            </div>
-            <div style="flex:1;">
-              <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-bottom:4px;">Progresso até auto-desligamento</div>
-              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
-                <div style="height:100%; width:73%; background:#e67e22; border-radius:3px; transition:width 0.3s;"></div>
+          <div style="padding:10px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:8px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div>
+                <div style="font-size:18px; font-weight:500; color:#e67e22;" id="caf2-inactive-min">22 min</div>
+                <div style="font-size:10px; color:rgba(255,255,255,0.5);">em standby</div>
               </div>
-              <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px;">8 min para desligar automaticamente</div>
+              <div style="flex:1;">
+                <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-bottom:4px;">Progresso até auto-desligamento (30 min)</div>
+                <div class="prog-wrap"><div class="prog-fill" id="caf2-prog" style="background:#e67e22; width:73%;"></div></div>
+                <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px;" id="caf2-remaining">8 min para desligar automaticamente</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="panel">
         <div class="panel-title">Picotadora — histórico de bloqueios (hoje)</div>
-        <div style="display:flex; flex-direction:column; gap:4px;">
+        <div style="display:flex; flex-direction:column; gap:4px;" id="pico-history">
           <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
             <div>
               <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado</div>
               <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.430W durante tentativa de uso</div>
             </div>
-            <div style="text-align:right;">
-              <div style="color:#e74c3c; font-weight:500;">07:45</div>
-              <div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 38min</div>
-            </div>
+            <div style="text-align:right;"><div style="color:#e74c3c; font-weight:500;">07:45</div><div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 38min</div></div>
           </div>
           <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
             <div>
               <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado</div>
               <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.510W durante tentativa de uso</div>
             </div>
-            <div style="text-align:right;">
-              <div style="color:#e74c3c; font-weight:500;">09:32</div>
-              <div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 30min</div>
-            </div>
+            <div style="text-align:right;"><div style="color:#e74c3c; font-weight:500;">09:32</div><div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 30min</div></div>
           </div>
           <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
             <div>
               <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado — atual</div>
               <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.450W · picotadora permanece bloqueada</div>
             </div>
-            <div style="text-align:right;">
-              <div style="color:#e74c3c; font-weight:500;">14:10</div>
-              <div style="font-size:10px; color:#e67e22;">em andamento</div>
-            </div>
+            <div style="text-align:right;"><div style="color:#e74c3c; font-weight:500;">14:10</div><div style="font-size:10px; color:#e67e22;">em andamento</div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CLIMA TAB -->
+    <!-- ══ TAB: CLIMATIZAÇÃO ══ -->
     <div id="tab-clima" class="tab-content">
       <div class="section-title">Climatização — 16 unidades LG</div>
       <div class="kpi-row" style="margin-bottom:16px;">
         <div class="kpi-card">
           <div class="kpi-label">ACs ligados</div>
-          <div class="kpi-val">11</div>
+          <div class="kpi-val" id="clima-acs-on">—</div>
           <div class="kpi-sub neu">de 16 unidades</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Consumo climatização</div>
-          <div class="kpi-val">46,2 kW</div>
-          <div class="kpi-sub down">▼ 27% vs sem automação</div>
+          <div class="kpi-val" id="clima-ac-kw">—</div>
+          <div class="kpi-sub down">&#9660; 27% vs sem automação</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Auto-desligamento hoje</div>
@@ -444,56 +407,36 @@
         <div class="kpi-card">
           <div class="kpi-label">Desligamento programado</div>
           <div class="kpi-val">18:00</div>
-          <div class="kpi-sub neu">todos os dias</div>
+          <div class="kpi-sub neu">todos os dias úteis</div>
         </div>
       </div>
       <div class="panel" style="margin-bottom:12px;">
         <div class="panel-title">Mapa de unidades — clique para controlar</div>
         <div id="ac-grid-full" style="display:grid; grid-template-columns:repeat(8,1fr); gap:6px;"></div>
       </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div class="two-col">
         <div class="panel">
           <div class="panel-title">Sensores de presença</div>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:6px;">
-              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Sala de Reunião</span>
-              <span style="font-size:12px; color:#2ecc71; font-weight:500;">Ocupada</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:6px;">
-              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Salão Principal A</span>
-              <span style="font-size:12px; color:#2ecc71; font-weight:500;">Ocupada</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:6px;">
-              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Salão Principal B</span>
-              <span style="font-size:12px; color:rgba(255,255,255,0.3);">Vazia · ACs desligados</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.25); border-radius:6px;">
-              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Copa</span>
-              <span style="font-size:12px; color:#e67e22; font-weight:500;">Em uso</span>
-            </div>
-          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;" id="presence-list"></div>
         </div>
         <div class="panel">
-          <div class="panel-title">Consumo por área (hoje em kWh)</div>
-          <div style="position:relative; height:180px;">
-            <canvas id="chartAreas"></canvas>
-          </div>
+          <div class="panel-title">Consumo por área hoje (kWh)</div>
+          <div style="position:relative; height:180px;"><canvas id="chartAreas"></canvas></div>
         </div>
       </div>
     </div>
 
-    <!-- COMPARATIVO TAB -->
+    <!-- ══ TAB: COMPARATIVOS ══ -->
     <div id="tab-comparativo" class="tab-content">
       <div class="section-title">Análise comparativa de consumo e custos</div>
       <div class="year-sel">
         <span class="year-label">Visualizar:</span>
-        <span class="year-pill active" onclick="setView('monthly')">Mensal 2025</span>
-        <span class="year-pill" onclick="setView('yearly')">Anual</span>
-        <span class="year-pill" onclick="setView('compare')">Antes x Depois</span>
+        <span class="year-pill active" onclick="setView(event,'monthly')">Mensal 2025</span>
+        <span class="year-pill" onclick="setView(event,'yearly')">Anual</span>
+        <span class="year-pill" onclick="setView(event,'compare')">Antes × Depois</span>
       </div>
-
       <div class="savings-box">
-        <div class="savings-icon">💰</div>
+        <div class="savings-icon">&#x1F4B0;</div>
         <div>
           <div class="savings-title">Economia acumulada desde a implantação</div>
           <div class="savings-val">R$ 8.430,00</div>
@@ -503,29 +446,23 @@
           <div style="font-size:18px; font-weight:500; color:#2ecc71;">142%</div>
         </div>
       </div>
-
       <div class="comp-grid">
         <div class="panel">
           <div class="panel-title" id="chart1-title">Consumo mensal (kWh) — 2025</div>
-          <div style="position:relative; height:220px;">
-            <canvas id="chartComp1"></canvas>
-          </div>
+          <div style="position:relative; height:220px;"><canvas id="chartComp1"></canvas></div>
         </div>
         <div class="panel">
           <div class="panel-title" id="chart2-title">Custo mensal (R$) — 2025</div>
-          <div style="position:relative; height:220px;">
-            <canvas id="chartComp2"></canvas>
-          </div>
+          <div style="position:relative; height:220px;"><canvas id="chartComp2"></canvas></div>
         </div>
       </div>
-
       <div class="panel">
         <div class="panel-title">Resumo comparativo — mês a mês</div>
         <div style="overflow-x:auto;">
           <table style="width:100%; border-collapse:collapse; font-size:11px;">
             <thead>
               <tr style="border-bottom:0.5px solid rgba(255,255,255,0.1);">
-                <th style="text-align:left; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Mês</th>
+                <th style="text-align:left;  padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Mês</th>
                 <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Consumo (kWh)</th>
                 <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Custo (R$)</th>
                 <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Economia</th>
@@ -544,217 +481,541 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const consumoSemAuto = [21500,20800,22100,21900,23400,24100,23800,22900,21700,22300,21100,22800];
-const consumoComAuto = [null,null,null,null,null,null,null,null,15200,15800,14900,null];
-const custoMes = [null,null,null,null,null,null,null,null,18506,19224,18134,null];
-const economiaAno = [null,null,null,null,null,null,null,null,2660,2772,2561,null];
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTES E ESTADO MOCK
+// ─────────────────────────────────────────────────────────────────────────────
+var INACTIVITY_LIMIT = 30;
 
-function clock() {
-  const el = document.getElementById('clock');
-  if(el) el.textContent = new Date().toLocaleTimeString('pt-BR');
-}
-clock(); setInterval(clock, 1000);
+var MOCK_STATE = {
+  plugs: {
+    caf1: { on: true,  watts: 1450, inactiveMin: 0  },
+    caf2: { on: true,  watts: 82,   inactiveMin: 22 },
+    pico: { on: false, watts: 0,    blocked: true   },
+  },
+  acs: [
+    {zone:'Reunião',on:true, temp:23,autoOff:false},
+    {zone:'Reunião',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:false,temp:null,autoOff:true},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão A',on:true, temp:23,autoOff:false},
+    {zone:'Salão B',on:false,temp:null,autoOff:true},
+    {zone:'Salão B',on:false,temp:null,autoOff:true},
+    {zone:'Salão B',on:false,temp:null,autoOff:true},
+    {zone:'Salão B',on:false,temp:null,autoOff:true},
+    {zone:'Copa',   on:false,temp:null,autoOff:false},
+    {zone:'Copa',   on:false,temp:null,autoOff:false},
+  ],
+  presence: { reuniao:true, salaoA:true, salaoB:false, copa:true },
+  summary: { totalKw:48.3, costToday:127, savingsMonth:1842, blocksToday:3, acsOn:11, acsTotal:16 },
+};
 
-function switchTab(name) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  event.target.classList.add('active');
-  if(name==='comparativo') setTimeout(initCompCharts, 100);
-  if(name==='clima') setTimeout(initAreaChart, 100);
-}
-
-const acStates = [
-  {z:'Reunião',on:true},{z:'Reunião',on:true},{z:'Salão A',on:true},{z:'Salão A',on:true},
-  {z:'Salão A',on:true},{z:'Salão A',on:false,auto:true},{z:'Salão A',on:true},{z:'Salão A',on:true},
-  {z:'Salão A',on:true},{z:'Salão A',on:true},{z:'Salão B',on:false,auto:true},{z:'Salão B',on:false,auto:true},
-  {z:'Salão B',on:false,auto:true},{z:'Salão B',on:false,auto:true},{z:'Copa',on:false},{z:'Copa',on:false}
+var MOCK_LOGS = [
+  {timestamp:'14:12',device:'pico',    event:'BLOQUEIO_INTERLOCK',    value:'Caf1=1450W', tag:'block'},
+  {timestamp:'14:10',device:'caf1',    event:'LIGADO',                value:'1450W',      tag:'info'},
+  {timestamp:'13:50',device:'caf2',    event:'ALERTA_INATIVIDADE',    value:'22min',      tag:'warn'},
+  {timestamp:'13:30',device:'AC 06',   event:'AUTO_OFF_SENSOR',       value:'Salão A',    tag:'save'},
+  {timestamp:'12:45',device:'AC 11-14',event:'AUTO_OFF_SENSOR',       value:'Salão B',    tag:'save'},
+  {timestamp:'10:02',device:'pico',    event:'DESBLOQUEIO_INTERLOCK', value:'Caf1=0W',    tag:'info'},
+  {timestamp:'09:32',device:'pico',    event:'BLOQUEIO_INTERLOCK',    value:'Caf1=1510W', tag:'block'},
+  {timestamp:'08:15',device:'caf1',    event:'AUTO_OFF_INATIVIDADE',  value:'30min',      tag:'save'},
 ];
 
-function buildAcGrid(containerId, small=false) {
-  const el = document.getElementById(containerId);
-  if(!el) return;
-  el.innerHTML = '';
-  acStates.forEach((ac,i) => {
-    const d = document.createElement('div');
-    d.className = 'ac-unit ' + (ac.on ? 'on' : ac.auto ? 'auto-off' : 'off');
-    d.style.cursor = 'pointer';
-    d.innerHTML = `
-      <div class="ac-num">AC ${String(i+1).padStart(2,'0')}</div>
-      <div class="ac-icon">${ac.on ? '❄' : ac.auto ? '⚠' : '○'}</div>
-      <div class="ac-temp">${ac.on ? '23°C' : ac.auto ? '—' : '—'}</div>
-      <div class="ac-label">${ac.on ? 'Ligado' : ac.auto ? 'Auto-off' : 'Desligado'}</div>
-    `;
-    d.onclick = () => {
-      if(!ac.auto) { ac.on = !ac.on; buildAcGrid(containerId, small); if(containerId!=='ac-grid') buildAcGrid('ac-grid',true); else buildAcGrid('ac-grid-full',false); }
-    };
-    el.appendChild(d);
+var MONTHLY_DATA = {
+  months:  ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+  before:  [21500,20800,22100,21900,23400,24100,23800,22900,21700,22300,21100,22800],
+  after:   [null, null, null, null, null, null, null, null, 15200,15800,14900,null],
+  cost:    [null, null, null, null, null, null, null, null, 18506,19224,18134,null],
+  savings: [null, null, null, null, null, null, null, null, 2660, 2772, 2561, null],
+  yearly:  {
+    labels: ['2023','2024','2025 (parcial)'],
+    before: [263800, 261700, 179700],
+    after:  [null,   null,   45900],
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BRIDGE SERVIDOR / MOCK
+// Tenta chamar google.script.run; recai em mock se não disponível.
+// ─────────────────────────────────────────────────────────────────────────────
+function callServer(funcName) {
+  var args = Array.prototype.slice.call(arguments, 1);
+  return new Promise(function(resolve) {
+    if (typeof google === 'undefined' || !google.script || !google.script.run) {
+      setTimeout(function() { resolve(getMockResponse(funcName, args)); }, 120);
+      return;
+    }
+    var runner = google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(function(err) {
+        console.warn('GAS error (' + funcName + '):', err);
+        resolve(getMockResponse(funcName, args));
+      });
+    runner[funcName].apply(runner, args);
   });
 }
-buildAcGrid('ac-grid', true);
-buildAcGrid('ac-grid-full', false);
 
-const logs = [
-  {t:'14:12',msg:'Picotadora bloqueada — Caf.1 em 1.450W',tag:'block'},
-  {t:'14:10',msg:'Cafeteira 1 ativada (ciclo 3)',tag:'info'},
-  {t:'13:50',msg:'Cafeteira 2 em standby — 22min sem uso',tag:'warn'},
-  {t:'13:30',msg:'AC 06 desligado por ausência (sensor)',tag:'save'},
-  {t:'12:45',msg:'AC 11-14 desligados — sala vazia',tag:'save'},
-  {t:'10:02',msg:'Picotadora liberada — Caf.1 desligada',tag:'info'},
-  {t:'09:32',msg:'Picotadora bloqueada — Caf.1 em 1.510W',tag:'block'},
-  {t:'08:15',msg:'Cafeteira 1 desligada automaticamente',tag:'save'},
-];
-const logEl = document.getElementById('log-list');
-if(logEl) logs.forEach(l => {
-  logEl.innerHTML += `<div class="log-item ${l.tag}">
-    <span class="log-time">${l.t}</span>
-    <span class="log-msg">${l.msg}</span>
-    <span class="log-tag ${l.tag}">${l.tag==='block'?'Bloqueio':l.tag==='save'?'Economia':l.tag==='warn'?'Alerta':'Info'}</span>
-  </div>`;
-});
-
-const plugStates = { caf1: true, caf2: true };
-function togglePlug(id) {
-  plugStates[id] = !plugStates[id];
-  const card = document.getElementById('plug-'+id);
-  const toggle = card.querySelector('.plug-toggle');
-  const watts = document.getElementById(id+'-watts');
-  const status = card.querySelector('.plug-status');
-  if(plugStates[id]) {
-    card.className = 'plug-card on'; toggle.className='plug-toggle on';
-    watts.textContent = id==='caf1'?'1.450 W':'82 W';
-    status.textContent = id==='caf1'?'Em uso':'Standby';
-  } else {
-    card.className = 'plug-card off'; toggle.className='plug-toggle off';
-    watts.textContent = '0 W'; status.textContent = 'Desligada';
-    if(id==='caf1') {
-      const pico = document.getElementById('plug-pico');
-      pico.className = 'plug-card on';
-      document.getElementById('pico-watts').textContent = '0 W';
-      pico.querySelector('.plug-status').textContent = 'Disponível';
+function getMockResponse(fn, args) {
+  switch (fn) {
+    case 'getDashboardData':      return JSON.parse(JSON.stringify(MOCK_STATE));
+    case 'getLogs':               return MOCK_LOGS.slice(0, args[0] || 8);
+    case 'getMonthlyConsumption': return MONTHLY_DATA;
+    case 'togglePlug': {
+      var id = args[0], val = args[1];
+      var plug = MOCK_STATE.plugs[id];
+      if (plug) {
+        plug.on = (val !== undefined) ? !!val : !plug.on;
+        if (id === 'caf1') MOCK_STATE.plugs.pico.blocked = plug.on && plug.watts > 1000;
+      }
+      return { ok: true };
     }
+    case 'toggleAc': {
+      var idx = args[0], v = args[1];
+      var ac = MOCK_STATE.acs[idx];
+      if (ac && !ac.autoOff) ac.on = (v !== undefined) ? !!v : !ac.on;
+      return { ok: true };
+    }
+    case 'emergencyOffAll':
+      Object.keys(MOCK_STATE.plugs).forEach(function(k) { MOCK_STATE.plugs[k].on = false; });
+      MOCK_STATE.acs.forEach(function(a) { a.on = false; });
+      MOCK_STATE.plugs.pico.blocked = false;
+      return { ok: true };
+    default: return null;
   }
 }
 
-function emergencyOff() {
-  ['caf1','caf2'].forEach(id => { plugStates[id]=false; togglePlug(id); });
-  acStates.forEach(a => a.on=false);
-  buildAcGrid('ac-grid',true);
-  alert('Desligamento geral executado!');
+// ─────────────────────────────────────────────────────────────────────────────
+// ESTADO DA APLICAÇÃO
+// ─────────────────────────────────────────────────────────────────────────────
+var appState = null;
+
+function refreshData() {
+  callServer('getDashboardData').then(function(state) {
+    if (!state) return;
+    appState = state;
+    renderAll(state);
+    updateStatusBadge();
+  });
+  callServer('getLogs', 8).then(function(logs) {
+    if (logs) renderLogs(logs);
+  });
 }
 
-let overviewChart;
-function initOverviewChart() {
-  const ctx = document.getElementById('chartOverview');
-  if(!ctx || overviewChart) return;
-  const labels = Array.from({length:12},(_,i)=>String(7+i).padStart(2,'0')+':00');
-  const data = [52,51,53,49,47,50,48,46,44,48,47,48];
-  overviewChart = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels,
-      datasets:[{
-        label:'Consumo kW',
-        data,
-        borderColor:'#4A90C4',
-        backgroundColor:'rgba(74,144,196,0.1)',
-        tension:0.4,
-        fill:true,
-        pointRadius:3,
-        pointBackgroundColor:'#4A90C4',
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.06)'}},
-        y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>v+'kW'},grid:{color:'rgba(255,255,255,0.06)'}}
-      }
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDERIZAÇÃO
+// ─────────────────────────────────────────────────────────────────────────────
+function renderAll(state) {
+  var s = state.summary || {};
+  setText('kpi-total',    s.totalKw    ? s.totalKw + ' kW' : '—');
+  setText('kpi-cost',     s.costToday  ? 'R$ ' + s.costToday : '—');
+  setText('kpi-savings',  s.savingsMonth ? 'R$ ' + formatNum(s.savingsMonth) : '—');
+  setText('kpi-blocks',   s.blocksToday !== undefined ? s.blocksToday : '—');
+  setText('acs-on-count', s.acsOn !== undefined ? s.acsOn : '—');
+  setText('clima-acs-on', s.acsOn !== undefined ? s.acsOn : '—');
+  setText('clima-ac-kw',  s.acsOn !== undefined ? (s.acsOn * 2.7).toFixed(1) + ' kW' : '—');
+
+  renderPlugsOverview(state.plugs);
+  buildAcGrid('ac-grid',      state.acs);
+  buildAcGrid('ac-grid-full', state.acs);
+  renderPresence(state.presence);
+  updateCafDetail(state.plugs);
+}
+
+function renderPlugsOverview(plugs) {
+  var container = document.getElementById('plugs-overview');
+  if (!container) return;
+  container.innerHTML = '';
+  var defs = [
+    { id:'caf1', name:'Cafeteira 1' },
+    { id:'caf2', name:'Cafeteira 2' },
+    { id:'pico', name:'Picotadora'  },
+  ];
+  defs.forEach(function(d) {
+    var p   = plugs[d.id];
+    var cls = p.blocked ? 'blocked' : p.on ? (p.watts < 150 ? 'standby' : 'on') : 'off';
+    var lbl = p.blocked ? 'Bloqueada' : p.on ? (p.watts < 150 ? 'Standby' : 'Em uso') : 'Desligada';
+    var toggleCls = p.blocked ? 'blocked' : cls;
+
+    var timerHtml = d.id !== 'pico'
+      ? '<div class="plug-timer" id="' + d.id + '-timer">' +
+          (p.inactiveMin ? 'Inativo há: ' + p.inactiveMin + 'min' : 'Inativo há: 0min') +
+        '</div>'
+      : '<div class="plug-timer">Caf.1 &gt; 1.000W</div>';
+
+    var card = document.createElement('div');
+    card.className = 'plug-card ' + cls;
+    card.id = 'plug-' + d.id;
+    card.innerHTML =
+      '<div class="plug-toggle ' + toggleCls + '"' +
+        (p.blocked ? '' : ' onclick="handleTogglePlug(\'' + d.id + '\')"') + '>' +
+        '<div class="plug-knob"></div></div>' +
+      '<div class="plug-name">'  + d.name + '</div>' +
+      '<div class="plug-watts" id="' + d.id + '-watts">' + (p.on ? p.watts + ' W' : '0 W') + '</div>' +
+      '<div class="plug-status">' + lbl + '</div>' + timerHtml;
+    container.appendChild(card);
+  });
+
+  var banner = document.getElementById('interlock-banner');
+  var caf1W  = plugs.caf1.on ? plugs.caf1.watts : 0;
+  if (banner) {
+    banner.style.display = plugs.pico.blocked ? 'block' : 'none';
+    setText('interlock-msg', 'Cafeteira 1 consome ' + caf1W + 'W > 1.000W → Picotadora bloqueada automaticamente');
+  }
+}
+
+function buildAcGrid(containerId, acs) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  acs.forEach(function(ac, i) {
+    var cls = ac.on ? 'on' : ac.autoOff ? 'auto-off' : 'off';
+    var d   = document.createElement('div');
+    d.className = 'ac-unit ' + cls;
+    d.innerHTML =
+      '<div class="ac-num">AC ' + pad2(i + 1) + '</div>' +
+      '<div class="ac-icon">' + (ac.on ? '&#10052;' : ac.autoOff ? '&#9888;' : '&#9675;') + '</div>' +
+      '<div class="ac-temp">' + (ac.on ? ac.temp + '&#176;C' : '&mdash;') + '</div>' +
+      '<div class="ac-label">' + (ac.on ? 'Ligado' : ac.autoOff ? 'Auto-off' : 'Desligado') + '</div>';
+    if (!ac.autoOff) {
+      d.onclick = (function(idx) { return function() { handleToggleAc(idx); }; })(i);
     }
+    el.appendChild(d);
   });
 }
 
-let areaChart;
+function renderLogs(logs) {
+  var el = document.getElementById('log-list');
+  if (!el) return;
+  el.innerHTML = '';
+  logs.slice(0, 8).forEach(function(l) {
+    var tagLabel = l.tag === 'block' ? 'Bloqueio' : l.tag === 'save' ? 'Economia' : l.tag === 'warn' ? 'Alerta' : 'Info';
+    var msg = (l.device ? l.device + ' &mdash; ' : '') + formatEventLabel(l.event);
+    if (l.value) msg += ' (' + l.value + ')';
+    el.innerHTML +=
+      '<div class="log-item ' + l.tag + '">' +
+        '<span class="log-time">' + l.timestamp + '</span>' +
+        '<span class="log-msg">'  + msg          + '</span>' +
+        '<span class="log-tag '   + l.tag + '">' + tagLabel + '</span>' +
+      '</div>';
+  });
+}
+
+function renderPresence(presence) {
+  var list = document.getElementById('presence-list');
+  if (!list || !presence) return;
+  var zones = [
+    {key:'reuniao', label:'Sala de Reunião'},
+    {key:'salaoA',  label:'Salão Principal A'},
+    {key:'salaoB',  label:'Salão Principal B'},
+    {key:'copa',    label:'Copa'},
+  ];
+  list.innerHTML = '';
+  zones.forEach(function(z) {
+    var occ = presence[z.key];
+    var bg  = occ ? 'rgba(46,204,113,0.1)' : 'rgba(255,255,255,0.05)';
+    var bc  = occ ? 'rgba(46,204,113,0.25)' : 'rgba(255,255,255,0.1)';
+    var lbl = occ ? 'Ocupada' : 'Vazia &middot; ACs desligados';
+    var clr = occ ? '#2ecc71' : 'rgba(255,255,255,0.3)';
+    list.innerHTML +=
+      '<div style="display:flex; justify-content:space-between; align-items:center; padding:8px;' +
+        'background:' + bg + '; border:0.5px solid ' + bc + '; border-radius:6px;">' +
+        '<span style="font-size:12px; color:rgba(255,255,255,0.8);">' + z.label + '</span>' +
+        '<span style="font-size:12px; color:' + clr + '; font-weight:500;">' + lbl + '</span>' +
+      '</div>';
+  });
+}
+
+function updateCafDetail(plugs) {
+  if (!plugs) return;
+  setText('caf1-detail-watts', (plugs.caf1.on ? plugs.caf1.watts : 0) + ' W');
+  setText('caf2-detail-watts', (plugs.caf2.on ? plugs.caf2.watts : 0) + ' W');
+  var inact = plugs.caf2.inactiveMin || 0;
+  setText('caf2-inactive-min', inact + ' min');
+  var pct  = Math.min(100, Math.round(inact / INACTIVITY_LIMIT * 100));
+  var fill = document.getElementById('caf2-prog');
+  if (fill) fill.style.width = pct + '%';
+  var rem  = Math.max(0, INACTIVITY_LIMIT - inact);
+  setText('caf2-remaining', rem === 0 ? 'Desligando automaticamente…' : rem + ' min para desligar automaticamente');
+}
+
+function updateStatusBadge() {
+  var isMock = typeof google === 'undefined' || !google.script || !google.script.run;
+  var dot    = document.getElementById('live-dot');
+  var status = document.getElementById('system-status');
+  var badge  = document.getElementById('mock-badge');
+  if (dot)    dot.className    = 'live-dot' + (isMock ? ' mock' : '');
+  if (status) status.textContent = isMock ? 'Dados simulados' : 'Sistema ativo';
+  if (badge)  badge.style.display = isMock ? 'inline' : 'none';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AÇÕES DO USUÁRIO
+// ─────────────────────────────────────────────────────────────────────────────
+function handleTogglePlug(id) {
+  callServer('togglePlug', id).then(function() { refreshData(); });
+}
+
+function handleToggleAc(idx) {
+  callServer('toggleAc', idx).then(function() { refreshData(); });
+}
+
+function handleEmergencyOff() {
+  if (!confirm('Confirmar desligamento geral de todos os dispositivos?')) return;
+  callServer('emergencyOffAll').then(function() {
+    refreshData();
+    pushLocalLog('SISTEMA', 'EMERGENCIA_DESLIGAMENTO_GERAL', null, 'block');
+  });
+}
+
+function pushLocalLog(device, event, value, tag) {
+  var now = new Date();
+  var t   = pad2(now.getHours()) + ':' + pad2(now.getMinutes());
+  MOCK_LOGS.unshift({ timestamp: t, device: device, event: event, value: value || '', tag: tag || 'info' });
+  renderLogs(MOCK_LOGS);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVEGAÇÃO POR ABAS
+// ─────────────────────────────────────────────────────────────────────────────
+function switchTab(e, name) {
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  e.currentTarget.classList.add('active');
+  if (name === 'comparativo') setTimeout(initCompCharts, 80);
+  if (name === 'clima')       setTimeout(initAreaChart,  80);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GRÁFICOS
+// ─────────────────────────────────────────────────────────────────────────────
+var axisStyle = {
+  ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
+  grid:  { color: 'rgba(255,255,255,0.06)' },
+};
+var legendStyle = { display: true, labels: { color: 'rgba(255,255,255,0.6)', font: { size: 10 } } };
+
+var overviewChart;
+function initOverviewChart() {
+  var ctx = document.getElementById('chartOverview');
+  if (!ctx || overviewChart) return;
+  var labels = [];
+  for (var i = 0; i < 12; i++) labels.push(pad2(7 + i) + ':00');
+  overviewChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{ label: 'Consumo kW', data: [52,51,53,49,47,50,48,46,44,48,47,48.3],
+        borderColor:'#4A90C4', backgroundColor:'rgba(74,144,196,0.1)',
+        tension:0.4, fill:true, pointRadius:3, pointBackgroundColor:'#4A90C4' }],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } },
+      scales: {
+        x: axisStyle,
+        y: { ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return v+' kW'; } }), grid: axisStyle.grid },
+      },
+    },
+  });
+}
+
+var areaChart;
 function initAreaChart() {
-  const ctx = document.getElementById('chartAreas');
-  if(!ctx||areaChart) return;
-  areaChart = new Chart(ctx,{
-    type:'doughnut',
-    data:{
-      labels:['Reunião','Salão A','Salão B','Copa'],
-      datasets:[{data:[11,25.3,0,0.9],backgroundColor:['#4A90C4','#1a7a3f','rgba(255,255,255,0.1)','#e67e22'],borderWidth:0}]
+  var ctx = document.getElementById('chartAreas');
+  if (!ctx || areaChart) return;
+  areaChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Reunião','Salão A','Salão B','Copa'],
+      datasets: [{ data:[11, 25.3, 0, 0.9],
+        backgroundColor:['#4A90C4','#1a7a3f','rgba(255,255,255,0.1)','#e67e22'], borderWidth:0 }],
     },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend: legendStyle }, cutout:'65%' },
   });
 }
 
-let comp1,comp2;
-function initCompCharts() {
-  const c1 = document.getElementById('chartComp1');
-  const c2 = document.getElementById('chartComp2');
-  if(!c1||!c2) return;
-  if(comp1){ comp1.destroy(); comp1=null; }
-  if(comp2){ comp2.destroy(); comp2=null; }
-  comp1 = new Chart(c1,{
-    type:'bar',
-    data:{
-      labels:months,
-      datasets:[
-        {label:'Sem automação',data:consumoSemAuto,backgroundColor:'rgba(231,76,60,0.3)',borderColor:'#e74c3c',borderWidth:1},
-        {label:'Com automação',data:consumoComAuto,backgroundColor:'rgba(46,204,113,0.35)',borderColor:'#2ecc71',borderWidth:1}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
-      x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},
-      y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>v.toLocaleString()},grid:{color:'rgba(255,255,255,0.05)'}}
-    }}
-  });
-  comp2 = new Chart(c2,{
-    type:'bar',
-    data:{
-      labels:months,
-      datasets:[
-        {label:'Custo (R$)',data:custoMes,backgroundColor:'rgba(74,144,196,0.4)',borderColor:'#4A90C4',borderWidth:1},
-        {label:'Economia (R$)',data:economiaAno,backgroundColor:'rgba(46,204,113,0.35)',borderColor:'#2ecc71',borderWidth:1}
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
-      x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},
-      y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>'R$'+v.toLocaleString()},grid:{color:'rgba(255,255,255,0.05)'}}
-    }}
-  });
+var comp1, comp2;
+var currentView = 'monthly';
+
+function initCompCharts() { buildCompCharts(currentView); }
+
+function buildCompCharts(view) {
+  var c1 = document.getElementById('chartComp1');
+  var c2 = document.getElementById('chartComp2');
+  if (!c1 || !c2) return;
+  if (comp1) { comp1.destroy(); comp1 = null; }
+  if (comp2) { comp2.destroy(); comp2 = null; }
+
+  if (view === 'monthly') {
+    setText('chart1-title', 'Consumo mensal (kWh) — 2025');
+    setText('chart2-title', 'Custo mensal (R$) — 2025');
+    comp1 = new Chart(c1, { type:'bar',
+      data:{ labels: MONTHLY_DATA.months, datasets:[
+        { label:'Sem automação', data: MONTHLY_DATA.before, backgroundColor:'rgba(231,76,60,0.3)',  borderColor:'#e74c3c', borderWidth:1 },
+        { label:'Com automação', data: MONTHLY_DATA.after,  backgroundColor:'rgba(46,204,113,0.35)', borderColor:'#2ecc71', borderWidth:1 },
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend: legendStyle },
+        scales:{ x:axisStyle, y:{ ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return v.toLocaleString('pt-BR'); } }), grid:axisStyle.grid } } },
+    });
+    comp2 = new Chart(c2, { type:'bar',
+      data:{ labels: MONTHLY_DATA.months, datasets:[
+        { label:'Custo (R$)',    data: MONTHLY_DATA.cost,    backgroundColor:'rgba(74,144,196,0.4)',  borderColor:'#4A90C4', borderWidth:1 },
+        { label:'Economia (R$)',  data: MONTHLY_DATA.savings, backgroundColor:'rgba(46,204,113,0.35)', borderColor:'#2ecc71', borderWidth:1 },
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend: legendStyle },
+        scales:{ x:axisStyle, y:{ ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return 'R$'+v.toLocaleString('pt-BR'); } }), grid:axisStyle.grid } } },
+    });
+
+  } else if (view === 'yearly') {
+    setText('chart1-title', 'Consumo total anual (kWh)');
+    setText('chart2-title', 'Economia anual estimada (R$)');
+    comp1 = new Chart(c1, { type:'bar',
+      data:{ labels: MONTHLY_DATA.yearly.labels, datasets:[
+        { label:'Sem automação', data: MONTHLY_DATA.yearly.before, backgroundColor:'rgba(231,76,60,0.3)',  borderColor:'#e74c3c', borderWidth:1 },
+        { label:'Com automação', data: MONTHLY_DATA.yearly.after,  backgroundColor:'rgba(46,204,113,0.35)', borderColor:'#2ecc71', borderWidth:1 },
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend: legendStyle },
+        scales:{ x:axisStyle, y:{ ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return v.toLocaleString('pt-BR'); } }), grid:axisStyle.grid } } },
+    });
+    comp2 = new Chart(c2, { type:'bar',
+      data:{ labels: MONTHLY_DATA.yearly.labels, datasets:[
+        { label:'Economia (R$)', data:[null, null, 8430], backgroundColor:'rgba(46,204,113,0.4)', borderColor:'#2ecc71', borderWidth:1 },
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } },
+        scales:{ x:axisStyle, y:{ ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return 'R$'+v.toLocaleString('pt-BR'); } }), grid:axisStyle.grid } } },
+    });
+
+  } else { // compare — Antes × Depois
+    setText('chart1-title', 'Média mensal: Antes vs Depois da automação (kWh)');
+    setText('chart2-title', 'Redução de custo por área (%)');
+    comp1 = new Chart(c1, { type:'bar',
+      data:{ labels:['Média mensal'], datasets:[
+        { label:'Antes', data:[22150], backgroundColor:'rgba(231,76,60,0.4)', borderColor:'#e74c3c', borderWidth:1 },
+        { label:'Depois', data:[15300], backgroundColor:'rgba(46,204,113,0.4)', borderColor:'#2ecc71', borderWidth:1 },
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend: legendStyle },
+        scales:{ x:axisStyle, y:{ ticks: Object.assign({}, axisStyle.ticks, { callback: function(v){ return v.toLocaleString('pt-BR')+' kWh'; } }), grid:axisStyle.grid } } },
+    });
+    comp2 = new Chart(c2, { type:'pie',
+      data:{
+        labels:['Climatização (ACs)','Copa','Outras cargas'],
+        datasets:[{ data:[82, 14, 4], backgroundColor:['#4A90C4','#e67e22','rgba(255,255,255,0.2)'], borderWidth:0 }],
+      },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend: legendStyle } },
+    });
+  }
   buildCompTable();
 }
 
+function setView(e, view) {
+  currentView = view;
+  document.querySelectorAll('.year-pill').forEach(function(p){ p.classList.remove('active'); });
+  e.currentTarget.classList.add('active');
+  buildCompCharts(view);
+}
+
 function buildCompTable() {
-  const tbody = document.getElementById('comp-table');
-  if(!tbody) return;
-  const tableData = [
-    {m:'Set/25',kwh:15200,custo:18506,eco:2660,bloq:48,auto:62},
-    {m:'Out/25',kwh:15800,custo:19224,eco:2772,bloq:51,auto:58},
-    {m:'Nov/25',kwh:14900,custo:18134,eco:2561,bloq:44,auto:71},
+  var tbody = document.getElementById('comp-table');
+  if (!tbody) return;
+  var rows = [
+    {m:'Set/25', kwh:15200, custo:18506, eco:2660, bloq:48, auto:62},
+    {m:'Out/25', kwh:15800, custo:19224, eco:2772, bloq:51, auto:58},
+    {m:'Nov/25', kwh:14900, custo:18134, eco:2561, bloq:44, auto:71},
   ];
-  tbody.innerHTML = tableData.map((r,i) => `
-    <tr style="border-bottom:0.5px solid rgba(255,255,255,0.06); ${i%2===0?'background:rgba(255,255,255,0.02)':''}">
-      <td style="padding:7px 8px; color:rgba(255,255,255,0.8);">${r.m}</td>
-      <td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">${r.kwh.toLocaleString()}</td>
-      <td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">R$ ${r.custo.toLocaleString()}</td>
-      <td style="padding:7px 8px; text-align:right; color:#2ecc71; font-weight:500;">R$ ${r.eco.toLocaleString()}</td>
-      <td style="padding:7px 8px; text-align:right; color:#e74c3c;">${r.bloq}</td>
-      <td style="padding:7px 8px; text-align:right; color:#4A90C4;">${r.auto}</td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = rows.map(function(r, i) {
+    return '<tr style="border-bottom:0.5px solid rgba(255,255,255,0.06);' + (i%2===0?'background:rgba(255,255,255,0.02)':'') + '">' +
+      '<td style="padding:7px 8px; color:rgba(255,255,255,0.8);">'                          + r.m                              + '</td>' +
+      '<td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">'         + r.kwh.toLocaleString('pt-BR')    + '</td>' +
+      '<td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">R$ '     + r.custo.toLocaleString('pt-BR')  + '</td>' +
+      '<td style="padding:7px 8px; text-align:right; color:#2ecc71; font-weight:500;">R$ '  + r.eco.toLocaleString('pt-BR')    + '</td>' +
+      '<td style="padding:7px 8px; text-align:right; color:#e74c3c;">'                       + r.bloq                           + '</td>' +
+      '<td style="padding:7px 8px; text-align:right; color:#4A90C4;">'                       + r.auto                           + '</td>' +
+    '</tr>';
+  }).join('');
 }
 
-function setView(view) {
-  document.querySelectorAll('.year-pill').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
-  if(comp1){ comp1.destroy(); comp1=null; }
-  if(comp2){ comp2.destroy(); comp2=null; }
-  setTimeout(initCompCharts, 50);
+// ─────────────────────────────────────────────────────────────────────────────
+// RELÓGIO + COUNTDOWN CAFETEIRA 2
+// ─────────────────────────────────────────────────────────────────────────────
+function tickClock() {
+  var el = document.getElementById('clock');
+  if (el) el.textContent = new Date().toLocaleTimeString('pt-BR');
 }
 
+var caf2InactiveSec = 22 * 60; // 22 minutos em segundos
+function tickCaf2() {
+  caf2InactiveSec = Math.min(INACTIVITY_LIMIT * 60, caf2InactiveSec + 1);
+  var inactMin = Math.floor(caf2InactiveSec / 60);
+  if (MOCK_STATE.plugs.caf2.on) {
+    MOCK_STATE.plugs.caf2.inactiveMin = inactMin;
+    if (appState && appState.plugs) appState.plugs.caf2.inactiveMin = inactMin;
+    updateCafDetail(MOCK_STATE.plugs);
+    var timerEl = document.getElementById('caf2-timer');
+    if (timerEl) timerEl.textContent = 'Inativo há: ' + inactMin + 'min';
+  }
+  if (caf2InactiveSec >= INACTIVITY_LIMIT * 60 && MOCK_STATE.plugs.caf2.on) {
+    MOCK_STATE.plugs.caf2.on = false;
+    pushLocalLog('caf2', 'AUTO_OFF_INATIVIDADE', '30min', 'save');
+    refreshData();
+    caf2InactiveSec = 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function setText(id, txt) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = txt;
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+
+function formatNum(n) { return Number(n).toLocaleString('pt-BR'); }
+
+function formatEventLabel(evt) {
+  var map = {
+    'LIGADO':                         'Ligado',
+    'DESLIGADO':                      'Desligado',
+    'BLOQUEIO_INTERLOCK':             'Bloqueio automático',
+    'DESBLOQUEIO_INTERLOCK':          'Bloqueio liberado',
+    'AUTO_OFF_INATIVIDADE':           'Auto-off (inatividade)',
+    'AUTO_OFF_SENSOR':                'Auto-off (ausência)',
+    'AUTO_OFF_18H':                   'Auto-off 18h',
+    'ALERTA_INATIVIDADE':             'Alerta: standby',
+    'AC_LIGADO':                      'AC ligado',
+    'AC_DESLIGADO':                   'AC desligado',
+    'EMERGENCIA_DESLIGAMENTO_GERAL':  'Emergência: desligamento geral',
+    'WEBHOOK_UPDATE':                 'Atualização via webhook',
+    'ERRO_WEBHOOK':                   'Erro webhook',
+  };
+  return map[evt] || evt;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INICIALIZAÇÃO
+// ─────────────────────────────────────────────────────────────────────────────
+tickClock();
+setInterval(tickClock, 1000);
+setInterval(tickCaf2,  1000);
+
+// Auto-refresh a cada 5 minutos, somente quando a aba está visível
+var refreshInterval = setInterval(function() {
+  if (!document.hidden) refreshData();
+}, 5 * 60 * 1000);
+
+// Atualiza imediatamente ao voltar para a aba após ficar inativo
+document.addEventListener('visibilitychange', function() {
+  if (!document.hidden) refreshData();
+});
+
+refreshData();
 setTimeout(initOverviewChart, 300);
 </script>
+</body>
+</html>
