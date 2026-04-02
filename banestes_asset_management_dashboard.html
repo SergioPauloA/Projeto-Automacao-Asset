@@ -1,0 +1,760 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --banes-navy: #003366;
+    --banes-blue: #005BAA;
+    --banes-gold: #C8960C;
+    --banes-light: #E8F1FA;
+    --banes-mid: #4A90C4;
+    --on-color: #1a7a3f;
+    --off-color: #8a8a8a;
+    --alert-color: #c0392b;
+    --warn-color: #e67e22;
+  }
+  body { font-family: var(--font-sans, sans-serif); }
+  .shell {
+    background: linear-gradient(160deg, #001f44 0%, #003366 60%, #004080 100%);
+    min-height: 100vh;
+    padding: 0;
+  }
+  .topbar {
+    background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(200,150,12,0.4);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-area { display: flex; align-items: center; gap: 10px; }
+  .logo-badge {
+    width: 36px; height: 36px;
+    background: var(--banes-gold);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500; font-size: 13px; color: #001f44;
+  }
+  .logo-text { color: #fff; }
+  .logo-text .brand { font-size: 15px; font-weight: 500; letter-spacing: 0.05em; }
+  .logo-text .sub { font-size: 11px; color: rgba(200,150,12,0.9); letter-spacing: 0.08em; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #2ecc71; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+  .live-label { font-size: 11px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+  .ts { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+  .nav-tabs {
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex; padding: 0 20px; gap: 4px;
+  }
+  .nav-tab {
+    padding: 10px 16px; font-size: 12px; color: rgba(255,255,255,0.5);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s; letter-spacing: 0.04em;
+  }
+  .nav-tab.active { color: var(--banes-gold); border-bottom-color: var(--banes-gold); }
+  .nav-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
+
+  .content { padding: 16px 20px; }
+
+  .section-title {
+    font-size: 11px; letter-spacing: 0.1em; color: rgba(200,150,12,0.8);
+    text-transform: uppercase; margin-bottom: 10px; font-weight: 500;
+  }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .kpi-card {
+    background: rgba(255,255,255,0.06);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 10px; padding: 14px;
+  }
+  .kpi-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+  .kpi-val { font-size: 22px; font-weight: 500; color: #fff; }
+  .kpi-sub { font-size: 11px; margin-top: 4px; }
+  .kpi-sub.up { color: #e74c3c; }
+  .kpi-sub.down { color: #2ecc71; }
+  .kpi-sub.neu { color: rgba(255,255,255,0.4); }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .panel {
+    background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 14px;
+  }
+  .panel-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 12px; }
+
+  .plugs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .plug-card {
+    border-radius: 8px; padding: 10px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .plug-card.on { background: rgba(26,122,63,0.2); border-color: rgba(46,204,113,0.3); }
+  .plug-card.off { background: rgba(138,138,138,0.1); border-color: rgba(138,138,138,0.2); }
+  .plug-card.blocked { background: rgba(192,57,43,0.2); border-color: rgba(192,57,43,0.4); }
+  .plug-card.standby { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.3); }
+  .plug-name { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+  .plug-watts { font-size: 18px; font-weight: 500; margin-bottom: 2px; }
+  .plug-card.on .plug-watts { color: #2ecc71; }
+  .plug-card.off .plug-watts { color: rgba(255,255,255,0.3); }
+  .plug-card.blocked .plug-watts { color: #e74c3c; }
+  .plug-card.standby .plug-watts { color: #e67e22; }
+  .plug-status { font-size: 10px; }
+  .plug-card.on .plug-status { color: #2ecc71; }
+  .plug-card.off .plug-status { color: rgba(255,255,255,0.3); }
+  .plug-card.blocked .plug-status { color: #e74c3c; }
+  .plug-card.standby .plug-status { color: #e67e22; }
+  .plug-timer { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .plug-toggle {
+    position: absolute; top: 8px; right: 8px;
+    width: 26px; height: 14px;
+    border-radius: 7px; cursor: pointer;
+    border: 0.5px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center;
+    transition: background 0.2s;
+  }
+  .plug-toggle.on { background: #2ecc71; justify-content: flex-end; }
+  .plug-toggle.off, .plug-toggle.standby { background: rgba(138,138,138,0.4); justify-content: flex-start; }
+  .plug-toggle.blocked { background: rgba(192,57,43,0.5); }
+  .plug-knob { width: 10px; height: 10px; border-radius: 50%; background: #fff; margin: 2px; }
+
+  .ac-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .ac-unit {
+    border-radius: 8px; padding: 8px;
+    border: 0.5px solid rgba(255,255,255,0.1);
+    text-align: center; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ac-unit:hover { border-color: rgba(255,255,255,0.3); }
+  .ac-unit.on { background: rgba(0,91,170,0.25); border-color: rgba(74,144,196,0.4); }
+  .ac-unit.off { background: rgba(138,138,138,0.08); }
+  .ac-unit.auto-off { background: rgba(230,126,34,0.15); border-color: rgba(230,126,34,0.35); }
+  .ac-num { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+  .ac-icon { font-size: 14px; margin-bottom: 2px; }
+  .ac-temp { font-size: 11px; font-weight: 500; }
+  .ac-unit.on .ac-temp { color: #4A90C4; }
+  .ac-unit.off .ac-temp { color: rgba(255,255,255,0.25); }
+  .ac-unit.auto-off .ac-temp { color: #e67e22; }
+  .ac-label { font-size: 9px; margin-top: 2px; }
+  .ac-unit.on .ac-label { color: rgba(74,144,196,0.8); }
+  .ac-unit.off .ac-label { color: rgba(255,255,255,0.25); }
+  .ac-unit.auto-off .ac-label { color: #e67e22; }
+
+  .chart-container { position: relative; width: 100%; height: 180px; }
+  .chart-controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chart-btn {
+    padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6); transition: all 0.15s;
+  }
+  .chart-btn.active { background: rgba(200,150,12,0.2); border-color: var(--banes-gold); color: var(--banes-gold); }
+
+  .log-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; }
+  .log-item {
+    display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px;
+    background: rgba(255,255,255,0.04); border-radius: 6px;
+    border-left: 3px solid transparent;
+    font-size: 11px;
+  }
+  .log-item.info { border-left-color: #4A90C4; }
+  .log-item.warn { border-left-color: #e67e22; }
+  .log-item.block { border-left-color: #e74c3c; }
+  .log-item.save { border-left-color: #2ecc71; }
+  .log-time { color: rgba(255,255,255,0.35); white-space: nowrap; min-width: 44px; }
+  .log-msg { color: rgba(255,255,255,0.75); flex: 1; }
+  .log-tag {
+    font-size: 9px; padding: 1px 5px; border-radius: 3px;
+    white-space: nowrap; font-weight: 500;
+  }
+  .log-tag.block { background: rgba(231,76,60,0.25); color: #e74c3c; }
+  .log-tag.save { background: rgba(46,204,113,0.2); color: #2ecc71; }
+  .log-tag.warn { background: rgba(230,126,34,0.2); color: #e67e22; }
+  .log-tag.info { background: rgba(74,144,196,0.2); color: #4A90C4; }
+
+  .full-row { grid-column: 1 / -1; }
+  .three-col { display: grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap: 12px; margin-bottom: 16px; }
+
+  .emergency-btn {
+    background: rgba(192,57,43,0.15);
+    border: 1px solid rgba(192,57,43,0.5);
+    border-radius: 8px; padding: 10px 20px;
+    color: #e74c3c; font-size: 13px; font-weight: 500; cursor: pointer;
+    width: 100%; letter-spacing: 0.05em; transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .emergency-btn:hover { background: rgba(192,57,43,0.3); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .year-sel { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .year-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .year-pill {
+    padding: 3px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 0.5px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6); transition: all 0.15s;
+  }
+  .year-pill.active { background: rgba(0,91,170,0.3); border-color: rgba(74,144,196,0.5); color: #4A90C4; }
+
+  .savings-box {
+    background: rgba(46,204,113,0.1); border: 0.5px solid rgba(46,204,113,0.3);
+    border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .savings-icon { font-size: 24px; }
+  .savings-title { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .savings-val { font-size: 18px; font-weight: 500; color: #2ecc71; }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+</style>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="logo-area">
+      <div class="logo-badge">BAM</div>
+      <div class="logo-text">
+        <div class="brand">BANESTES</div>
+        <div class="sub">ASSET MANAGEMENT · AUTOMAÇÃO SETORIAL</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="live-label">
+        <div class="live-dot"></div>
+        Sistema ativo
+      </div>
+      <div class="ts" id="clock"></div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="switchTab('overview')">Visão Geral</div>
+    <div class="nav-tab" onclick="switchTab('plugs')">Tomadas Inteligentes</div>
+    <div class="nav-tab" onclick="switchTab('clima')">Climatização</div>
+    <div class="nav-tab" onclick="switchTab('comparativo')">Comparativos</div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Consumo atual (total)</div>
+          <div class="kpi-val" id="kpi-total">48,3 kW</div>
+          <div class="kpi-sub neu">16 ACs + Copa</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Custo estimado hoje</div>
+          <div class="kpi-val" id="kpi-cost">R$ 127</div>
+          <div class="kpi-sub down">▼ 18% vs ontem</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Economia do mês</div>
+          <div class="kpi-val">R$ 1.842</div>
+          <div class="kpi-sub down">▼ 29% vs mês anterior</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Bloqueios automáticos</div>
+          <div class="kpi-val" id="kpi-blocks">3</div>
+          <div class="kpi-sub warn" style="color:#e67e22;">picotadora hoje</div>
+        </div>
+      </div>
+
+      <div class="three-col">
+        <div class="panel">
+          <div class="panel-title">Tomadas inteligentes — copa</div>
+          <div class="plugs-grid">
+            <div class="plug-card on" id="plug-caf1">
+              <div class="plug-toggle on" onclick="togglePlug('caf1')"><div class="plug-knob"></div></div>
+              <div class="plug-name">Cafeteira 1</div>
+              <div class="plug-watts" id="caf1-watts">1.450 W</div>
+              <div class="plug-status">Em uso</div>
+              <div class="plug-timer" id="caf1-timer">Inativo há: 0min</div>
+            </div>
+            <div class="plug-card standby" id="plug-caf2">
+              <div class="plug-toggle standby" onclick="togglePlug('caf2')"><div class="plug-knob"></div></div>
+              <div class="plug-name">Cafeteira 2</div>
+              <div class="plug-watts" id="caf2-watts">82 W</div>
+              <div class="plug-status">Standby</div>
+              <div class="plug-timer" id="caf2-timer">Inativo há: 22min</div>
+            </div>
+            <div class="plug-card blocked" id="plug-pico">
+              <div class="plug-toggle blocked"><div class="plug-knob"></div></div>
+              <div class="plug-name">Picotadora</div>
+              <div class="plug-watts" id="pico-watts">0 W</div>
+              <div class="plug-status">Bloqueada</div>
+              <div class="plug-timer">Caf.1 > 1.000W</div>
+            </div>
+          </div>
+          <div style="margin-top:10px; padding:8px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:6px;">
+            <div style="font-size:10px; color:#e67e22; font-weight:500;">Intertravamento ativo</div>
+            <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-top:2px;">Cafeteira 1 consome 1.450W &gt; 1.000W → Picotadora bloqueada automaticamente</div>
+          </div>
+          <button class="emergency-btn" onclick="emergencyOff()">Desligar tudo — emergência</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">ACs — status geral</div>
+          <div class="ac-grid" id="ac-grid"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">Log de eventos</div>
+          <div class="log-list scrollbar-thin" id="log-list"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Consumo — últimas 12h (kW)</div>
+        <div class="chart-container">
+          <canvas id="chartOverview"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLUGS TAB -->
+    <div id="tab-plugs" class="tab-content">
+      <div class="section-title">Gerenciamento de tomadas inteligentes</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div class="panel">
+          <div class="panel-title">Cafeteira 1 — detalhe</div>
+          <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:80px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Potência</div>
+              <div style="font-size:20px; font-weight:500; color:#2ecc71;">1.450W</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Hoje</div>
+              <div style="font-size:20px; font-weight:500; color:#fff;">3,2 kWh</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Custo/dia</div>
+              <div style="font-size:20px; font-weight:500; color:#fff;">R$ 3,90</div>
+            </div>
+          </div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:6px;">Ciclos de uso hoje</div>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div style="background:rgba(46,204,113,0.15); border-radius:4px; padding:6px 8px; font-size:11px; display:flex; justify-content:space-between;">
+              <span style="color:rgba(255,255,255,0.7);">07:42 – 08:15</span><span style="color:#2ecc71;">33 min · 0,80 kWh</span>
+            </div>
+            <div style="background:rgba(46,204,113,0.15); border-radius:4px; padding:6px 8px; font-size:11px; display:flex; justify-content:space-between;">
+              <span style="color:rgba(255,255,255,0.7);">09:30 – 10:00</span><span style="color:#2ecc71;">30 min · 0,72 kWh</span>
+            </div>
+            <div style="background:rgba(46,204,113,0.15); border-radius:4px; padding:6px 8px; font-size:11px; display:flex; justify-content:space-between;">
+              <span style="color:rgba(255,255,255,0.7);">14:10 – em uso</span><span style="color:#e67e22;">ativo · 1,68 kWh</span>
+            </div>
+          </div>
+          <div style="margin-top:10px; padding:8px; background:rgba(255,255,255,0.04); border-radius:6px;">
+            <div style="font-size:10px; color:rgba(255,255,255,0.4);">Auto-desligamento por inatividade:</div>
+            <div style="font-size:11px; color:#e67e22; margin-top:2px;">30 min sem atividade → desligamento automático</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Cafeteira 2 — detalhe</div>
+          <div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:80px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.25); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Potência</div>
+              <div style="font-size:20px; font-weight:500; color:#e67e22;">82W</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Hoje</div>
+              <div style="font-size:20px; font-weight:500; color:#fff;">1,8 kWh</div>
+            </div>
+            <div style="flex:1; min-width:80px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">Custo/dia</div>
+              <div style="font-size:20px; font-weight:500; color:#fff;">R$ 2,19</div>
+            </div>
+          </div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:6px;">Status — inatividade</div>
+          <div style="padding:10px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.3); border-radius:8px; display:flex; align-items:center; gap:10px;">
+            <div>
+              <div style="font-size:18px; font-weight:500; color:#e67e22;">22 min</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.5);">em standby</div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:10px; color:rgba(255,255,255,0.5); margin-bottom:4px;">Progresso até auto-desligamento</div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;">
+                <div style="height:100%; width:73%; background:#e67e22; border-radius:3px; transition:width 0.3s;"></div>
+              </div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px;">8 min para desligar automaticamente</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Picotadora — histórico de bloqueios (hoje)</div>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado</div>
+              <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.430W durante tentativa de uso</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color:#e74c3c; font-weight:500;">07:45</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 38min</div>
+            </div>
+          </div>
+          <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado</div>
+              <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.510W durante tentativa de uso</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color:#e74c3c; font-weight:500;">09:32</div>
+              <div style="font-size:10px; color:rgba(255,255,255,0.3);">duração: 30min</div>
+            </div>
+          </div>
+          <div style="background:rgba(231,76,60,0.1); border-left:3px solid #e74c3c; border-radius:4px; padding:8px 10px; font-size:11px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="color:rgba(255,255,255,0.8);">Bloqueio automático ativado — atual</div>
+              <div style="color:rgba(255,255,255,0.4); margin-top:2px;">Cafeteira 1 atingiu 1.450W · picotadora permanece bloqueada</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="color:#e74c3c; font-weight:500;">14:10</div>
+              <div style="font-size:10px; color:#e67e22;">em andamento</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIMA TAB -->
+    <div id="tab-clima" class="tab-content">
+      <div class="section-title">Climatização — 16 unidades LG</div>
+      <div class="kpi-row" style="margin-bottom:16px;">
+        <div class="kpi-card">
+          <div class="kpi-label">ACs ligados</div>
+          <div class="kpi-val">11</div>
+          <div class="kpi-sub neu">de 16 unidades</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Consumo climatização</div>
+          <div class="kpi-val">46,2 kW</div>
+          <div class="kpi-sub down">▼ 27% vs sem automação</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Auto-desligamento hoje</div>
+          <div class="kpi-val">4</div>
+          <div class="kpi-sub neu">por ausência detectada</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Desligamento programado</div>
+          <div class="kpi-val">18:00</div>
+          <div class="kpi-sub neu">todos os dias</div>
+        </div>
+      </div>
+      <div class="panel" style="margin-bottom:12px;">
+        <div class="panel-title">Mapa de unidades — clique para controlar</div>
+        <div id="ac-grid-full" style="display:grid; grid-template-columns:repeat(8,1fr); gap:6px;"></div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="panel">
+          <div class="panel-title">Sensores de presença</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:6px;">
+              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Sala de Reunião</span>
+              <span style="font-size:12px; color:#2ecc71; font-weight:500;">Ocupada</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(46,204,113,0.1); border:0.5px solid rgba(46,204,113,0.25); border-radius:6px;">
+              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Salão Principal A</span>
+              <span style="font-size:12px; color:#2ecc71; font-weight:500;">Ocupada</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(255,255,255,0.05); border:0.5px solid rgba(255,255,255,0.1); border-radius:6px;">
+              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Salão Principal B</span>
+              <span style="font-size:12px; color:rgba(255,255,255,0.3);">Vazia · ACs desligados</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(230,126,34,0.1); border:0.5px solid rgba(230,126,34,0.25); border-radius:6px;">
+              <span style="font-size:12px; color:rgba(255,255,255,0.8);">Copa</span>
+              <span style="font-size:12px; color:#e67e22; font-weight:500;">Em uso</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">Consumo por área (hoje em kWh)</div>
+          <div style="position:relative; height:180px;">
+            <canvas id="chartAreas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARATIVO TAB -->
+    <div id="tab-comparativo" class="tab-content">
+      <div class="section-title">Análise comparativa de consumo e custos</div>
+      <div class="year-sel">
+        <span class="year-label">Visualizar:</span>
+        <span class="year-pill active" onclick="setView('monthly')">Mensal 2025</span>
+        <span class="year-pill" onclick="setView('yearly')">Anual</span>
+        <span class="year-pill" onclick="setView('compare')">Antes x Depois</span>
+      </div>
+
+      <div class="savings-box">
+        <div class="savings-icon">💰</div>
+        <div>
+          <div class="savings-title">Economia acumulada desde a implantação</div>
+          <div class="savings-val">R$ 8.430,00</div>
+        </div>
+        <div style="margin-left:auto; text-align:right;">
+          <div style="font-size:11px; color:rgba(255,255,255,0.5);">ROI estimado</div>
+          <div style="font-size:18px; font-weight:500; color:#2ecc71;">142%</div>
+        </div>
+      </div>
+
+      <div class="comp-grid">
+        <div class="panel">
+          <div class="panel-title" id="chart1-title">Consumo mensal (kWh) — 2025</div>
+          <div style="position:relative; height:220px;">
+            <canvas id="chartComp1"></canvas>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-title" id="chart2-title">Custo mensal (R$) — 2025</div>
+          <div style="position:relative; height:220px;">
+            <canvas id="chartComp2"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Resumo comparativo — mês a mês</div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr style="border-bottom:0.5px solid rgba(255,255,255,0.1);">
+                <th style="text-align:left; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Mês</th>
+                <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Consumo (kWh)</th>
+                <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Custo (R$)</th>
+                <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Economia</th>
+                <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Bloqueios</th>
+                <th style="text-align:right; padding:6px 8px; color:rgba(255,255,255,0.5); font-weight:500;">Auto-desl. ACs</th>
+              </tr>
+            </thead>
+            <tbody id="comp-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const consumoSemAuto = [21500,20800,22100,21900,23400,24100,23800,22900,21700,22300,21100,22800];
+const consumoComAuto = [null,null,null,null,null,null,null,null,15200,15800,14900,null];
+const custoMes = [null,null,null,null,null,null,null,null,18506,19224,18134,null];
+const economiaAno = [null,null,null,null,null,null,null,null,2660,2772,2561,null];
+
+function clock() {
+  const el = document.getElementById('clock');
+  if(el) el.textContent = new Date().toLocaleTimeString('pt-BR');
+}
+clock(); setInterval(clock, 1000);
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if(name==='comparativo') setTimeout(initCompCharts, 100);
+  if(name==='clima') setTimeout(initAreaChart, 100);
+}
+
+const acStates = [
+  {z:'Reunião',on:true},{z:'Reunião',on:true},{z:'Salão A',on:true},{z:'Salão A',on:true},
+  {z:'Salão A',on:true},{z:'Salão A',on:false,auto:true},{z:'Salão A',on:true},{z:'Salão A',on:true},
+  {z:'Salão A',on:true},{z:'Salão A',on:true},{z:'Salão B',on:false,auto:true},{z:'Salão B',on:false,auto:true},
+  {z:'Salão B',on:false,auto:true},{z:'Salão B',on:false,auto:true},{z:'Copa',on:false},{z:'Copa',on:false}
+];
+
+function buildAcGrid(containerId, small=false) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = '';
+  acStates.forEach((ac,i) => {
+    const d = document.createElement('div');
+    d.className = 'ac-unit ' + (ac.on ? 'on' : ac.auto ? 'auto-off' : 'off');
+    d.style.cursor = 'pointer';
+    d.innerHTML = `
+      <div class="ac-num">AC ${String(i+1).padStart(2,'0')}</div>
+      <div class="ac-icon">${ac.on ? '❄' : ac.auto ? '⚠' : '○'}</div>
+      <div class="ac-temp">${ac.on ? '23°C' : ac.auto ? '—' : '—'}</div>
+      <div class="ac-label">${ac.on ? 'Ligado' : ac.auto ? 'Auto-off' : 'Desligado'}</div>
+    `;
+    d.onclick = () => {
+      if(!ac.auto) { ac.on = !ac.on; buildAcGrid(containerId, small); if(containerId!=='ac-grid') buildAcGrid('ac-grid',true); else buildAcGrid('ac-grid-full',false); }
+    };
+    el.appendChild(d);
+  });
+}
+buildAcGrid('ac-grid', true);
+buildAcGrid('ac-grid-full', false);
+
+const logs = [
+  {t:'14:12',msg:'Picotadora bloqueada — Caf.1 em 1.450W',tag:'block'},
+  {t:'14:10',msg:'Cafeteira 1 ativada (ciclo 3)',tag:'info'},
+  {t:'13:50',msg:'Cafeteira 2 em standby — 22min sem uso',tag:'warn'},
+  {t:'13:30',msg:'AC 06 desligado por ausência (sensor)',tag:'save'},
+  {t:'12:45',msg:'AC 11-14 desligados — sala vazia',tag:'save'},
+  {t:'10:02',msg:'Picotadora liberada — Caf.1 desligada',tag:'info'},
+  {t:'09:32',msg:'Picotadora bloqueada — Caf.1 em 1.510W',tag:'block'},
+  {t:'08:15',msg:'Cafeteira 1 desligada automaticamente',tag:'save'},
+];
+const logEl = document.getElementById('log-list');
+if(logEl) logs.forEach(l => {
+  logEl.innerHTML += `<div class="log-item ${l.tag}">
+    <span class="log-time">${l.t}</span>
+    <span class="log-msg">${l.msg}</span>
+    <span class="log-tag ${l.tag}">${l.tag==='block'?'Bloqueio':l.tag==='save'?'Economia':l.tag==='warn'?'Alerta':'Info'}</span>
+  </div>`;
+});
+
+const plugStates = { caf1: true, caf2: true };
+function togglePlug(id) {
+  plugStates[id] = !plugStates[id];
+  const card = document.getElementById('plug-'+id);
+  const toggle = card.querySelector('.plug-toggle');
+  const watts = document.getElementById(id+'-watts');
+  const status = card.querySelector('.plug-status');
+  if(plugStates[id]) {
+    card.className = 'plug-card on'; toggle.className='plug-toggle on';
+    watts.textContent = id==='caf1'?'1.450 W':'82 W';
+    status.textContent = id==='caf1'?'Em uso':'Standby';
+  } else {
+    card.className = 'plug-card off'; toggle.className='plug-toggle off';
+    watts.textContent = '0 W'; status.textContent = 'Desligada';
+    if(id==='caf1') {
+      const pico = document.getElementById('plug-pico');
+      pico.className = 'plug-card on';
+      document.getElementById('pico-watts').textContent = '0 W';
+      pico.querySelector('.plug-status').textContent = 'Disponível';
+    }
+  }
+}
+
+function emergencyOff() {
+  ['caf1','caf2'].forEach(id => { plugStates[id]=false; togglePlug(id); });
+  acStates.forEach(a => a.on=false);
+  buildAcGrid('ac-grid',true);
+  alert('Desligamento geral executado!');
+}
+
+let overviewChart;
+function initOverviewChart() {
+  const ctx = document.getElementById('chartOverview');
+  if(!ctx || overviewChart) return;
+  const labels = Array.from({length:12},(_,i)=>String(7+i).padStart(2,'0')+':00');
+  const data = [52,51,53,49,47,50,48,46,44,48,47,48];
+  overviewChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Consumo kW',
+        data,
+        borderColor:'#4A90C4',
+        backgroundColor:'rgba(74,144,196,0.1)',
+        tension:0.4,
+        fill:true,
+        pointRadius:3,
+        pointBackgroundColor:'#4A90C4',
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.06)'}},
+        y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>v+'kW'},grid:{color:'rgba(255,255,255,0.06)'}}
+      }
+    }
+  });
+}
+
+let areaChart;
+function initAreaChart() {
+  const ctx = document.getElementById('chartAreas');
+  if(!ctx||areaChart) return;
+  areaChart = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['Reunião','Salão A','Salão B','Copa'],
+      datasets:[{data:[11,25.3,0,0.9],backgroundColor:['#4A90C4','#1a7a3f','rgba(255,255,255,0.1)','#e67e22'],borderWidth:0}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'65%'}
+  });
+}
+
+let comp1,comp2;
+function initCompCharts() {
+  const c1 = document.getElementById('chartComp1');
+  const c2 = document.getElementById('chartComp2');
+  if(!c1||!c2) return;
+  if(comp1){ comp1.destroy(); comp1=null; }
+  if(comp2){ comp2.destroy(); comp2=null; }
+  comp1 = new Chart(c1,{
+    type:'bar',
+    data:{
+      labels:months,
+      datasets:[
+        {label:'Sem automação',data:consumoSemAuto,backgroundColor:'rgba(231,76,60,0.3)',borderColor:'#e74c3c',borderWidth:1},
+        {label:'Com automação',data:consumoComAuto,backgroundColor:'rgba(46,204,113,0.35)',borderColor:'#2ecc71',borderWidth:1}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+      x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>v.toLocaleString()},grid:{color:'rgba(255,255,255,0.05)'}}
+    }}
+  });
+  comp2 = new Chart(c2,{
+    type:'bar',
+    data:{
+      labels:months,
+      datasets:[
+        {label:'Custo (R$)',data:custoMes,backgroundColor:'rgba(74,144,196,0.4)',borderColor:'#4A90C4',borderWidth:1},
+        {label:'Economia (R$)',data:economiaAno,backgroundColor:'rgba(46,204,113,0.35)',borderColor:'#2ecc71',borderWidth:1}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+      x:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{color:'rgba(255,255,255,0.4)',font:{size:10},callback:v=>'R$'+v.toLocaleString()},grid:{color:'rgba(255,255,255,0.05)'}}
+    }}
+  });
+  buildCompTable();
+}
+
+function buildCompTable() {
+  const tbody = document.getElementById('comp-table');
+  if(!tbody) return;
+  const tableData = [
+    {m:'Set/25',kwh:15200,custo:18506,eco:2660,bloq:48,auto:62},
+    {m:'Out/25',kwh:15800,custo:19224,eco:2772,bloq:51,auto:58},
+    {m:'Nov/25',kwh:14900,custo:18134,eco:2561,bloq:44,auto:71},
+  ];
+  tbody.innerHTML = tableData.map((r,i) => `
+    <tr style="border-bottom:0.5px solid rgba(255,255,255,0.06); ${i%2===0?'background:rgba(255,255,255,0.02)':''}">
+      <td style="padding:7px 8px; color:rgba(255,255,255,0.8);">${r.m}</td>
+      <td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">${r.kwh.toLocaleString()}</td>
+      <td style="padding:7px 8px; text-align:right; color:rgba(255,255,255,0.7);">R$ ${r.custo.toLocaleString()}</td>
+      <td style="padding:7px 8px; text-align:right; color:#2ecc71; font-weight:500;">R$ ${r.eco.toLocaleString()}</td>
+      <td style="padding:7px 8px; text-align:right; color:#e74c3c;">${r.bloq}</td>
+      <td style="padding:7px 8px; text-align:right; color:#4A90C4;">${r.auto}</td>
+    </tr>
+  `).join('');
+}
+
+function setView(view) {
+  document.querySelectorAll('.year-pill').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  if(comp1){ comp1.destroy(); comp1=null; }
+  if(comp2){ comp2.destroy(); comp2=null; }
+  setTimeout(initCompCharts, 50);
+}
+
+setTimeout(initOverviewChart, 300);
+</script>
